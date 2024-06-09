@@ -1,0 +1,33 @@
+services:
+  reverse-proxy:
+    image: traefik:v3.0.1
+    # image: traefik:v2.11.3
+    command:
+      # - --api.insecure=true
+      # - --api.dashboard=true
+      # - --providers.docker
+      - --providers.docker.exposedByDefault=false
+      # - --providers.docker.network=${COMPOSE_PROJECT_NAME}_default
+      # - --entryPoints.web.address=:80
+    ports:
+      - 80:80
+      # - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      TZ: Asia/Tokyo
+    # labels:
+    #   - traefik.enable=true
+    #   - traefik.http.routers.dashboard.service=api@internal
+    #   - traefik.http.routers.dashboard.rule=Host(`dashboard.localhost`)
+    # restart: always
+
+  web:
+    image: nginx:latest
+    environment:
+      TZ: Asia/Tokyo
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.web.rule=Host(`web.docker.localhost`)
+      # - traefik.http.routers.web.entrypoints=web
+      # - traefik.http.routers.web.rule=PathPrefix(`/nginx/`)
